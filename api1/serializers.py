@@ -14,4 +14,4 @@ class PostAuthorSerializer(ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'author', )
+        fields = ('id', 'Author_Name', )

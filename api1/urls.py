@@ -5,6 +5,6 @@ from .views import PostViewSet
 app_name = 'api'
 
 router = routers.DefaultRouter()
-router.register(r'post', PostViewSet, base_name="post")  # NOQA
+router.register(r'post', PostViewSet, basename="post")  # NOQA
 
 urlpatterns = router.urls
