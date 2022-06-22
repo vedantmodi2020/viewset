@@ -18,11 +18,8 @@ from django.urls import path , include
 from api1 import views 
 from rest_framework.routers import DefaultRouter
 
-router = DefaultRouter()
-
-router.register('student',views.StudentViewset,basename='Student')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(router.urls)),
+    path('', include('api1.urls',namespace='bookspace')),
 ]

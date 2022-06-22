@@ -1,53 +1,41 @@
-from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated, AllowAny  # NOQA
 from rest_framework.response import Response
-from .models import Student
-from .serializers import Studentserializrs
+from rest_framework.decorators import action
 from rest_framework import status
-from rest_framework import viewsets
+from .serializers import PostSerializer, PostAuthorSerializer
+from .models import Post
 
-class StudentViewset(viewsets.ViewSet):
-    
-    def List(self,request):
-        print(self.action)
-        stu = Student.objects.all()
-        serializer = Studentserializrs(stu,many = True)
-        return Response(serializer.data)
 
-    def retrieve(self,request,pk=None):
-        id = pk
-        if id is not None:
-            stu = Student.objects.get(id=id)
-            serializer = Studentserializrs(stu)
-            return Response(serializer.data)
+class PostViewSet(ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = (IsAuthenticated,)
+    http_method_names = ['get', ]
 
-    def create(self,request):
-        serializer = Studentserializrs(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'msg':'Data Created'},status=status.HTTP_201_CREATED)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-        
-    def update(self,request,pk):
-        id = pk
-        stu = Student.objects.get(id=id)
-        serializer  =Studentserializrs(stu,data=request.data)
-        if serializer.is_valid:
-            serializer.save()
-            return Response({'msg':'Complete Data Updated'})
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return self.serializer_class
+        elif self.action == "post_author":
+            return PostAuthorSerializer
+        elif self.action == "all_post_author":
+            return PostAuthorSerializer
+        else:
+            return self.serializer_class
 
-    def partial_update(self,request,pk):
-        id=pk
-        stu = Student.objects.get(id=id)
-        serializer = Studentserializrs(stu,data=request.data,partial = True)
-        if serializer.is_valid:
-            serializer.save()
-            return Response({'msg':'Partial Data Update'})
-        return Response(serializer.errors)
+    def retrieve(self, request, pk=None):
+        post = self.get_object()
+        serializer = self.get_serializer(post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def destroy(self,request,pk):
-        id = pk
-        stu = Student.objects.get(pk=id)
-        stu.delete()
-        return Response({'msg':'Data Deleted'})
-        
+    @action(detail=True, methods=["get"], url_path=r'post-author',)
+    def post_author(self, request, pk=None):
+        post = self.get_object()
+        serializer = self.get_serializer(post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["get"], url_path=r'all-post-author',)
+    def all_post_author(self, request):
+        post = Post.objects.all()
+        serializer = self.get_serializer(post, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

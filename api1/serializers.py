@@ -1,7 +1,17 @@
-from rest_framework import serializers
-from .models import Student
+from rest_framework.serializers import ModelSerializer
+from rest_framework import exceptions
+from .models import Post
 
-class Studentserializrs(serializers.ModelSerializer):
+
+class PostSerializer(ModelSerializer):
+
     class Meta:
-        model = Student
-        field = ['id','name','roll','city']
+        model = Post
+        fields = "__all__"
+
+
+class PostAuthorSerializer(ModelSerializer):
+
+    class Meta:
+        model = Post
+        fields = ('id', 'author', )

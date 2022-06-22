@@ -1,7 +1,7 @@
 from django.db import models
 
-# Create your models here.
-class Student(models.Model):
- name = models.CharField(max_length=50)
- roll = models.IntegerField()
- city = models.CharField(max_length=50)
+
+class Post(models.Model):
+ Author_Name = models.CharField(max_length=50)
+ Author_id = models.IntegerField()
+ Book_Name = models.CharField(max_length=50)
